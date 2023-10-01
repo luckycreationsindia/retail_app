@@ -10,12 +10,14 @@ class CustomTextField extends StatelessWidget {
     this.keyboardType = TextInputType.text,
     this.required = false,
     this.obscureText = false,
+    this.width = 400,
   });
 
   final String label;
   final TextEditingController controller;
   final String? hint;
   final int? lines;
+  final double width;
   final TextInputType keyboardType;
   final bool required;
   final bool obscureText;
@@ -23,7 +25,7 @@ class CustomTextField extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return SizedBox(
-      width: 400,
+      width: width,
       child: TextFormField(
         decoration: InputDecoration(
           border: OutlineInputBorder(
