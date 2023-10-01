@@ -3,9 +3,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_localizations/flutter_localizations.dart';
 import 'package:google_fonts/google_fonts.dart';
 import 'package:intl/intl.dart';
-import 'package:isar/isar.dart';
 import 'package:path_provider/path_provider.dart';
-import 'package:retail_app/src/models/settings.dart';
 import 'package:retail_app/src/utils/custom_theme.dart';
 import 'package:retail_app/src/utils/isar_service.dart';
 import 'package:retail_app/src/utils/router.dart';
@@ -14,6 +12,11 @@ import 'package:retail_app/src/utils/globals.dart' as globals;
 import 'l10n/l10n.dart';
 
 void main() async {
+  await initMainData();
+  runApp(const MyApp());
+}
+
+Future<void> initMainData() async {
   WidgetsFlutterBinding.ensureInitialized();
   GoogleFonts.config.allowRuntimeFetching = false;
   globals.appPath = (await getApplicationDocumentsDirectory()).path;
@@ -29,7 +32,6 @@ void main() async {
     }
     // print(details.exceptionAsString(), stackTrace: details.stack);
   };
-  runApp(const MyApp());
 }
 
 class MyApp extends StatelessWidget {
