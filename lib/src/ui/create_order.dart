@@ -93,6 +93,7 @@ class _CreateOrderPageState extends State<CreateOrderPage> {
                       },
                     ),
                     CustomTextField(
+                      width: 100,
                       label: "Qty",
                       controller: qtyController,
                       keyboardType: TextInputType.number,
@@ -146,7 +147,8 @@ class _CreateOrderPageState extends State<CreateOrderPage> {
                   ],
                 ),
                 Expanded(
-                  child: SingleChildScrollView(
+                  child: InteractiveViewer(
+                    constrained: false,
                     child: DataTable(
                       dataRowColor:
                           MaterialStateProperty.resolveWith(_getDataRowColor),
