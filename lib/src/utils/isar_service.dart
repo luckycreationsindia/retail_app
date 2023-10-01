@@ -7,7 +7,6 @@ import 'package:retail_app/src/models/settings.dart';
 import 'package:retail_app/src/utils/globals.dart' as globals;
 
 class IsarService {
-
   Future<Isar> openDB() async {
     globals.db = Isar.open(
       directory: globals.appPath,
@@ -104,6 +103,13 @@ class IsarService {
       return isar.settings.put(settings);
     });
     return true;
+  }
+
+  Future<void> reset() async {
+    final isar = globals.db;
+    await isar.writeAsync((isar) {
+      isar.clear();
+    });
   }
 }
 
