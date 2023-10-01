@@ -50,6 +50,20 @@ Future<void> showAlertDialog(BuildContext context,
   );
 }
 
+Future<void> showLoading(BuildContext context,
+    {String title = "Loading..."}) async {
+  return showDialog<void>(
+    context: context,
+    barrierDismissible: false,
+    builder: (BuildContext context) {
+      return AlertDialog(
+        title: Text(title),
+        content: const Center(child: CircularProgressIndicator()),
+      );
+    },
+  );
+}
+
 Future<void> showConfirmationDialog(
   BuildContext context, {
   required String title,
