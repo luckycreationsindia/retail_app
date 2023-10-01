@@ -17,10 +17,11 @@ void main() async {
   WidgetsFlutterBinding.ensureInitialized();
   GoogleFonts.config.allowRuntimeFetching = false;
   globals.appPath = (await getApplicationDocumentsDirectory()).path;
+  await IsarService().openDB();
 
-  final settings = (await IsarService().db).settings.where().findFirst();
+  final settings = await IsarService().getSettings();
   //Set Default Language
-  Intl.defaultLocale = settings?.lang ?? "en";
+  Intl.defaultLocale = settings.lang;
   //Error Handling
   FlutterError.onError = (details) {
     if (kDebugMode) {

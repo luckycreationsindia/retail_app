@@ -6,7 +6,7 @@ import 'package:retail_app/src/models/product.dart';
 import 'package:retail_app/src/models/settings.dart';
 import 'package:retail_app/src/ui/widgets/custom_dropdown_menu.dart';
 import 'package:retail_app/src/ui/widgets/custom_text_field.dart';
-import 'package:retail_app/src/utils/isar_service.dart';
+import 'package:retail_app/src/utils/extenstions.dart';
 import 'package:retail_app/src/utils/utils.dart';
 
 class CreateOrderPage extends StatefulWidget {
@@ -207,6 +207,24 @@ class _CreateOrderPageState extends State<CreateOrderPage> {
                       order!.net = net;
                       order!.netRound = netRound;
                       order!.updatedAt = DateTime.now();
+
+                      context.updateOrder(order!).then((value) {
+                        settings.orderNo++;
+                        context.updateSettings(settings)
+                            .then((value) => Navigator.of(context).pop(value))
+                            .catchError((err) {
+                          printDebug(err);
+                          showSnackMessage(context, "Order Updated");
+                          Navigator.of(context).pop(value);
+                        });
+                      }).catchError((err) {
+                        printDebug(err);
+                        showAlertDialog(
+                          context,
+                          title: "Error",
+                          message: "Error Updating Order",
+                        );
+                      });
                     } else {
                       int totalQty = 0;
                       double gross = 0;
@@ -231,24 +249,25 @@ class _CreateOrderPageState extends State<CreateOrderPage> {
                         netRound: netRound,
                         createdAt: DateTime.now(),
                       );
-                    }
-                    IsarService().addUpdateOrder(order!).then((value) {
-                      settings.orderNo++;
-                      IsarService()
-                          .addUpdateSettings(settings)
-                          .then((value) => Navigator.of(context).pop(value))
-                          .catchError((err) {
+
+                      context.createOrder(order!).then((value) {
+                        settings.orderNo++;
+                        context.updateSettings(settings)
+                            .then((value) => Navigator.of(context).pop(value))
+                            .catchError((err) {
+                          printDebug(err);
+                          showSnackMessage(context, "Order Created");
+                          Navigator.of(context).pop(value);
+                        });
+                      }).catchError((err) {
                         printDebug(err);
-                        Navigator.of(context).pop(value);
+                        showAlertDialog(
+                          context,
+                          title: "Error",
+                          message: "Error Creating Order",
+                        );
                       });
-                    }).catchError((err) {
-                      printDebug(err);
-                      showAlertDialog(
-                        context,
-                        title: "Error",
-                        message: "Error Creating Order",
-                      );
-                    });
+                    }
                   },
                 ),
               ],
@@ -307,13 +326,21 @@ class _CreateOrderPageState extends State<CreateOrderPage> {
   }
 
   loadSettings() async {
-    settings = await IsarService().getSettings();
+    settings = await context.getSettings();
+  }
+
+  loadCategories() async {
+    return await context.getAllCategories();
+  }
+
+  loadProducts() async {
+    return await context.getAllProducts();
   }
 
   loadAllProducts() async {
     await loadSettings();
-    List<Category> categoryList = await IsarService().getAllCategories();
-    List<Product> productList = await IsarService().getAllProducts();
+    List<Category> categoryList = await loadCategories();
+    List<Product> productList = await loadProducts();
 
     _productList = productList.map((e) {
       e.categoryData =

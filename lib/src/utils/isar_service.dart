@@ -7,15 +7,9 @@ import 'package:retail_app/src/models/settings.dart';
 import 'package:retail_app/src/utils/globals.dart' as globals;
 
 class IsarService {
-  IsarService() {
-    db = openDB();
-  }
 
-  late Future<Isar> db;
-
-  // Return IsarDB, if not found, then create
   Future<Isar> openDB() async {
-    final db = await Isar.openAsync(
+    globals.db = Isar.open(
       directory: globals.appPath,
       name: 'retail_app',
       schemas: [
@@ -26,41 +20,41 @@ class IsarService {
       ],
     );
 
-    final settings = db.settings.where().findFirst();
+    await Future.delayed(const Duration(seconds: 1));
+
+    final settings = globals.db.settings.where().findFirst();
     if (settings == null) {
-      await db.writeAsync((isar) async {
-        return isar.settings.put(Settings(
-          id: ObjectId().hexString,
-          createdAt: DateTime.now(),
-        ));
-      });
+      await addUpdateSettings(Settings(
+        id: ObjectId().hexString,
+        createdAt: DateTime.now(),
+      ));
     }
 
-    return db;
+    return globals.db;
   }
 
   Future<List<Category>> getAllCategories() async {
-    final isar = await db;
+    final isar = globals.db;
     return isar.categorys.where().findAll();
   }
 
   Future<List<Product>> getAllProducts() async {
-    final isar = await db;
+    final isar = globals.db;
     return isar.products.where().findAll();
   }
 
   Future<Settings> getSettings() async {
-    final isar = await db;
+    final isar = globals.db;
     return isar.settings.where().findFirst()!;
   }
 
   Stream<List<Category>> listenToCategoryList() async* {
-    final isar = await db;
+    final isar = globals.db;
     yield* isar.categorys.where().watch(fireImmediately: true);
   }
 
   Future<bool> addUpdateCategory(Category category) async {
-    final isar = await db;
+    final isar = globals.db;
     await isar.writeAsync((isar) {
       return isar.categorys.put(category);
     });
@@ -68,7 +62,7 @@ class IsarService {
   }
 
   Stream<List<Product>> listenToProductList(String category) async* {
-    final isar = await db;
+    final isar = globals.db;
     yield* isar.products
         .where()
         .categoryEqualTo(category)
@@ -76,7 +70,7 @@ class IsarService {
   }
 
   Future<bool> addUpdateProduct(Product product) async {
-    final isar = await db;
+    final isar = globals.db;
     await isar.writeAsync((isar) {
       return isar.products.put(product);
     });
@@ -84,12 +78,12 @@ class IsarService {
   }
 
   Stream<List<Order>> listenToOrderList() async* {
-    final isar = await db;
+    final isar = globals.db;
     yield* isar.orders.where().sortByStatus().watch(fireImmediately: true);
   }
 
   Future<bool> addUpdateOrder(Order order) async {
-    final isar = await db;
+    final isar = globals.db;
     await isar.writeAsync((isar) {
       return isar.orders.put(order);
     });
@@ -97,7 +91,7 @@ class IsarService {
   }
 
   Future<bool> deleteOrder(String order) async {
-    final isar = await db;
+    final isar = globals.db;
     await isar.writeAsync((isar) {
       return isar.orders.delete(order);
     });
@@ -105,7 +99,7 @@ class IsarService {
   }
 
   Future<bool> addUpdateSettings(Settings settings) async {
-    final isar = await db;
+    final isar = globals.db;
     await isar.writeAsync((isar) {
       return isar.settings.put(settings);
     });

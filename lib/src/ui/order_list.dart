@@ -2,7 +2,6 @@ import 'package:flutter/material.dart';
 import 'package:retail_app/src/models/order.dart';
 import 'package:retail_app/src/ui/create_order.dart';
 import 'package:retail_app/src/utils/extenstions.dart';
-import 'package:retail_app/src/utils/isar_service.dart';
 import 'package:retail_app/src/utils/utils.dart';
 
 class OrderListPage extends StatefulWidget {
@@ -96,7 +95,7 @@ class _OrderListPageState extends State<OrderListPage> {
                 message: "Do you want to change order status?",
                 onConfirm: () {
                   order.status = !order.status;
-                  IsarService().addUpdateOrder(order).then((value) {
+                  context.updateOrder(order).then((value) {
                     showSnackMessage(context, "Order updated");
                   }).catchError((err) {
                     showSnackMessage(context, "Error Updating Order");
@@ -207,7 +206,7 @@ class _OrderListPageState extends State<OrderListPage> {
   }
 
   void deleteOrder(Order order, Function(Error? error, bool status) next) {
-    IsarService().deleteOrder(order.id).then((value) {
+    context.deleteOrder(order.id).then((value) {
       next(null, value);
     }).catchError((err) => next(err, false));
   }
